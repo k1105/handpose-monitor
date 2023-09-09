@@ -6,7 +6,6 @@ import { getSmoothedHandpose } from "../lib/getSmoothedHandpose";
 import { dotHand } from "../lib/p5/dotHand";
 import { isFront } from "../lib/detector/isFront";
 import { Monitor } from "../components/Monitor";
-import { Recorder } from "../components/Recorder";
 import { Handpose } from "../@types/global";
 import { DisplayHands } from "../lib/DisplayHandsClass";
 import { HandposeHistory } from "../lib/HandposeHitsoryClass";
@@ -25,6 +24,7 @@ const Sketch = dynamic(import("react-p5"), {
 export const HandSketch = ({ handpose }: Props) => {
   const handposeHistory = new HandposeHistory();
   const displayHands = new DisplayHands();
+  const recordedDataRef = useRef<{ left: number[]; right: number[] }[]>([]);
 
   const debugLog = useRef<{ label: string; value: any }[]>([]);
 
@@ -80,7 +80,7 @@ export const HandSketch = ({ handpose }: Props) => {
           displayHands.left.pose,
           Math.max(p5.width, p5.height) * 1.5
         ),
-        strokeWeight: 3,
+        strokeWeight: Math.max(p5.width, p5.height) / 300,
       });
       dotHand({
         p5,
@@ -88,7 +88,7 @@ export const HandSketch = ({ handpose }: Props) => {
           displayHands.left.pose,
           Math.max(p5.width, p5.height) * 1.5
         ),
-        dotSize: 10,
+        dotSize: Math.max(p5.width, p5.height) / 100,
       });
       p5.pop();
     }
@@ -104,7 +104,7 @@ export const HandSketch = ({ handpose }: Props) => {
           displayHands.right.pose,
           Math.max(p5.width, p5.height) * 1.5
         ),
-        strokeWeight: 3,
+        strokeWeight: Math.max(p5.width, p5.height) / 300,
       });
       dotHand({
         p5,
@@ -112,7 +112,7 @@ export const HandSketch = ({ handpose }: Props) => {
           displayHands.right.pose,
           Math.max(p5.width, p5.height) * 1.5
         ),
-        dotSize: 10,
+        dotSize: Math.max(p5.width, p5.height) / 100,
       });
       p5.pop();
     }
@@ -125,7 +125,6 @@ export const HandSketch = ({ handpose }: Props) => {
   return (
     <>
       <Monitor handpose={handpose} debugLog={debugLog} />
-      <Recorder handpose={handpose} />
       <Sketch
         preload={preload}
         setup={setup}

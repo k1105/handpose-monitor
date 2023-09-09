@@ -7,6 +7,12 @@ import { Handpose } from "../@types/global";
 
 type Props = {
   handpose: MutableRefObject<Hand[]>;
+  recordedData: MutableRefObject<
+    {
+      left: number[];
+      right: number[];
+    }[]
+  >;
 };
 
 const Sketch = dynamic(import("react-p5"), {
@@ -14,21 +20,29 @@ const Sketch = dynamic(import("react-p5"), {
   ssr: false,
 });
 
-export const Recorder = ({ handpose }: Props) => {
+export const Recorder = ({ handpose, recordedData }: Props) => {
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const recordedHandposes: {
-    left: Handpose;
-    right: Handpose;
+    left: number[];
+    right: number[];
   }[] = []; //stateの変更に伴ってリセットされる
 
-  const setup = (p5: p5Types, canvasParentRef: Element) => {};
+  const setup = (p5: p5Types) => {};
 
   const draw = (p5: p5Types) => {
     const rawHands: {
       left: Handpose;
       right: Handpose;
     } = convertHandToHandpose(handpose.current); //平滑化されていない手指の動きを使用する
-    recordedHandposes.push(rawHands);
+    const leftKeypoints = [];
+    for (const keypoint of rawHands.left) {
+      leftKeypoints.push(keypoint.x, keypoint.y);
+    }
+    const rightKeypoints = [];
+    for (const keypoint of rawHands.right) {
+      rightKeypoints.push(keypoint.x, keypoint.y);
+    }
+    recordedHandposes.push({ left: leftKeypoints, right: rightKeypoints });
   };
 
   return (
@@ -38,7 +52,14 @@ export const Recorder = ({ handpose }: Props) => {
           onClick={() => {
             if (isRecording) {
               //記録の終了
-              console.log(JSON.stringify(recordedHandposes));
+              recordedData.current = recordedHandposes;
+              const content = JSON.stringify(recordedData);
+              const blob = new Blob([content], { type: "text/plain" });
+              const objUrl = window.URL.createObjectURL(blob);
+              const link = document.createElement("a");
+              link.href = objUrl;
+              link.download = String(Date.now()) + ".txt";
+              link.click();
             }
             setIsRecording(!isRecording);
           }}

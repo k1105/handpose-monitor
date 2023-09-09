@@ -25,7 +25,6 @@ const Sketch = dynamic(import("react-p5"), {
 
 export const Monitor = ({ handpose, debugLog }: Props) => {
   const logRef = useRef<HTMLDivElement>(null);
-  const [debugVisibility, setDebugVisibility] = useState<boolean>(false);
 
   const preload = (p5: p5Types) => {
     // 画像などのロードを行う
@@ -59,6 +58,12 @@ export const Monitor = ({ handpose, debugLog }: Props) => {
       right: Handpose;
     } = rawHands;
 
+    p5.push();
+    p5.noFill();
+    p5.strokeWeight(1);
+    p5.rect(p5.width - 330, 30, 300, 225);
+    p5.pop();
+
     if (hands.left.length > 0) {
       hands.left = resizeHandpose(hands.left, 3 / 4);
       p5.push();
@@ -90,54 +95,37 @@ export const Monitor = ({ handpose, debugLog }: Props) => {
   return (
     <>
       <div style={{ position: "absolute", top: 0, left: 0, zIndex: 99 }}>
-        <button
-          onClick={() => {
-            setDebugVisibility(!debugVisibility);
-          }}
+        <>
+          <Sketch
+            preload={preload}
+            setup={setup}
+            draw={draw}
+            windowResized={windowResized}
+          />
+        </>
+        <div
           style={{
             position: "absolute",
-            top: "30px",
-            left: "30px",
-            width: "100px",
-            height: "30px",
-            background: !debugVisibility ? "rgba(0,0,0,0)" : "#fff",
-            border: "1px solid #ffffff",
-            color: debugVisibility ? "#011960" : "#fff",
-            borderRadius: "5px",
+            right: 30,
+            top: 30,
+            zIndex: -1,
           }}
         >
-          {!debugVisibility ? "Show Monitor" : "Hide Monitor"}
-        </button>
-        {debugVisibility && (
-          <>
-            <Sketch
-              preload={preload}
-              setup={setup}
-              draw={draw}
-              windowResized={windowResized}
-            />
-          </>
-        )}
-        {debugVisibility && (
-          <div
-            style={{
-              position: "absolute",
-              right: 30,
-              top: 30,
-              zIndex: -1,
-            }}
-          >
-            <Webcam //手指の動きを取得するのに必要なカメラ映像
+          {/* <Webcam //手指の動きを取得するのに必要なカメラ映像
               width="300"
               height="225"
               mirrored
               id="webcam"
               audio={false}
               screenshotFormat="image/jpeg"
-            />
-            <div ref={logRef} style={{ fontSize: "0.8rem" }} />
+            /> */}
+          <div style={{ height: 225, width: 300 }}>
+            <p style={{ lineHeight: 0, color: "white", marginLeft: "10px" }}>
+              Camera Range
+            </p>
           </div>
-        )}
+          <div ref={logRef} style={{ fontSize: "0.8rem", textAlign: "left" }} />
+        </div>
       </div>
     </>
   );
