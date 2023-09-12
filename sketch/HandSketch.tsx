@@ -89,11 +89,11 @@ export const HandSketch = ({ handpose, isLost }: Props) => {
       }
     } else {
       const leftKeypoints = [];
-      for (const keypoint of rawHands.left) {
+      for (const keypoint of hands.left) {
         leftKeypoints.push(keypoint.x, keypoint.y);
       }
       const rightKeypoints = [];
-      for (const keypoint of rawHands.right) {
+      for (const keypoint of hands.right) {
         rightKeypoints.push(keypoint.x, keypoint.y);
       }
       recordedDataRef.current.push({
