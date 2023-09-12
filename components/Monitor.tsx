@@ -1,6 +1,12 @@
 import dynamic from "next/dynamic";
 import p5Types from "p5";
-import { MutableRefObject, useRef, useState } from "react";
+import {
+  Dispatch,
+  MutableRefObject,
+  SetStateAction,
+  useRef,
+  useState,
+} from "react";
 import { Hand, Keypoint } from "@tensorflow-models/hand-pose-detection";
 import { resizeHandpose } from "../lib/converter/resizeHandpose";
 import { Handpose } from "../@types/global";
@@ -19,6 +25,8 @@ type Props = {
   scale: MutableRefObject<number>;
   offset: MutableRefObject<number>;
   position: MutableRefObject<Keypoint>;
+  disableDownload: boolean;
+  setDisableDownload: Dispatch<SetStateAction<boolean>>;
 };
 
 const Sketch = dynamic(import("react-p5"), {
@@ -32,6 +40,8 @@ export const Monitor = ({
   offset,
   scale,
   position,
+  disableDownload,
+  setDisableDownload,
 }: Props) => {
   const sliderContainerRef = useRef<HTMLDivElement>(null);
   const logRef = useRef<HTMLDivElement>(null);
@@ -176,6 +186,11 @@ export const Monitor = ({
             <input type="range" min="0" max="5" ref={offsetSliderRef} />
             <p ref={scaleTextRef} />
             <input type="range" min="5" max="20" ref={scaleSliderRef} />
+            <div>
+              <button onClick={() => setDisableDownload(!disableDownload)}>
+                {disableDownload ? <>Enable Download</> : <>Disable Download</>}
+              </button>
+            </div>
           </div>
         </div>
       </div>

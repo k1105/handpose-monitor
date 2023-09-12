@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic";
 import p5Types from "p5";
-import { MutableRefObject, useRef } from "react";
+import { MutableRefObject, useRef, useState } from "react";
 import { Hand, Keypoint } from "@tensorflow-models/hand-pose-detection";
 import { getSmoothedHandpose } from "../lib/getSmoothedHandpose";
 import { isFront } from "../lib/detector/isFront";
@@ -10,6 +10,7 @@ import { DisplayHands } from "../lib/DisplayHandsClass";
 import { HandposeHistory } from "../lib/HandposeHitsoryClass";
 import { convert3DKeypointsToHandpose } from "../lib/converter/convert3DKeypointsToHandpose";
 import { showHand } from "../components/showHand";
+import { autoRecorder } from "../components/autoRecorder";
 
 type Props = {
   handpose: MutableRefObject<Hand[]>;
@@ -23,6 +24,7 @@ const Sketch = dynamic(import("react-p5"), {
 export const HandSketch = ({ handpose, isLost }: Props) => {
   const handposeHistory = new HandposeHistory();
   const displayHands = new DisplayHands();
+  const [disableDownload, setDisableDownload] = useState<boolean>(false);
   const recordedDataRef = useRef<{ left: number[]; right: number[] }[]>([]);
   const archiveRef = useRef<{ left: number[]; right: number[] }[]>([]);
   const position = useRef<Keypoint>({ x: 0, y: 200 });
@@ -72,33 +74,13 @@ export const HandSketch = ({ handpose, isLost }: Props) => {
     p5.clear();
 
     displayHands.update(hands);
-    if (isLost.current) {
-      if (recordedDataRef.current.length > 10) {
-        //記録の終了
-        const content = JSON.stringify(recordedDataRef.current);
-        const blob = new Blob([content], { type: "text/plain" });
-        const objUrl = window.URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = objUrl;
-        link.download = String(Date.now()) + ".json";
-        link.click();
-        archiveRef.current = recordedDataRef.current;
-        recordedDataRef.current = [];
-      }
-    } else {
-      const leftKeypoints = [];
-      for (const keypoint of hands.left) {
-        leftKeypoints.push(keypoint.x, keypoint.y);
-      }
-      const rightKeypoints = [];
-      for (const keypoint of hands.right) {
-        rightKeypoints.push(keypoint.x, keypoint.y);
-      }
-      recordedDataRef.current.push({
-        left: leftKeypoints,
-        right: rightKeypoints,
-      });
-    }
+    autoRecorder(
+      isLost.current,
+      recordedDataRef,
+      archiveRef,
+      hands,
+      disableDownload
+    );
 
     if (isLost.current && archiveRef.current.length > 0) {
       const rawPose = archiveRef.current[timeRef.current];
@@ -169,6 +151,8 @@ export const HandSketch = ({ handpose, isLost }: Props) => {
         offset={offset}
         position={position}
         scale={scale}
+        disableDownload={disableDownload}
+        setDisableDownload={setDisableDownload}
       />
       <Sketch
         preload={preload}
