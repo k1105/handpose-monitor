@@ -3,15 +3,13 @@ import p5Types from "p5";
 import { MutableRefObject, useRef } from "react";
 import { Hand, Keypoint } from "@tensorflow-models/hand-pose-detection";
 import { getSmoothedHandpose } from "../lib/getSmoothedHandpose";
-import { dotHand } from "../lib/p5/dotHand";
 import { isFront } from "../lib/detector/isFront";
 import { Monitor } from "../components/Monitor";
 import { Handpose } from "../@types/global";
 import { DisplayHands } from "../lib/DisplayHandsClass";
 import { HandposeHistory } from "../lib/HandposeHitsoryClass";
-import { lineHand } from "../lib/p5/lineHand";
 import { convert3DKeypointsToHandpose } from "../lib/converter/convert3DKeypointsToHandpose";
-import { resizeHandpose } from "../lib/converter/resizeHandpose";
+import { showHand } from "../components/showHand";
 
 type Props = {
   handpose: MutableRefObject<Hand[]>;
@@ -105,121 +103,57 @@ export const HandSketch = ({ handpose, isLost }: Props) => {
     if (isLost.current && archiveRef.current.length > 0) {
       const rawPose = archiveRef.current[timeRef.current];
       if (rawPose.left.length > 0) {
-        p5.push();
-        p5.stroke(255);
-        p5.fill(255);
-        p5.translate(
-          p5.width * (0.5 - offset.current),
-          p5.height / 2 + +position.current.y
-        );
         const pose: Keypoint[] = [];
         for (let i = 0; i < 21; i++) {
           pose.push({ x: rawPose.left[2 * i], y: rawPose.left[2 * i + 1] });
         }
-        lineHand({
-          p5,
-          hand: resizeHandpose(
-            pose,
-            Math.max(p5.width, p5.height) * 1.5 * scale.current
-          ),
-          strokeWeight: Math.max(p5.width, p5.height) / 300,
-        });
-        dotHand({
-          p5,
-          hand: resizeHandpose(
-            pose,
-            Math.max(p5.width, p5.height) * 1.5 * scale.current
-          ),
-          dotSize: Math.max(p5.width, p5.height) / 100,
-        });
-        p5.pop();
+        showHand(
+          pose,
+          255,
+          position.current,
+          offset.current,
+          scale.current,
+          p5
+        );
       }
       if (rawPose.right.length > 0) {
-        p5.push();
-        p5.stroke(255);
-        p5.fill(255);
-        p5.translate(
-          p5.width * (0.5 + offset.current),
-          p5.height / 2 + +position.current.y
-        );
         const pose: Keypoint[] = [];
         for (let i = 0; i < 21; i++) {
           pose.push({ x: rawPose.right[2 * i], y: rawPose.right[2 * i + 1] });
         }
-        lineHand({
-          p5,
-          hand: resizeHandpose(
-            pose,
-            Math.max(p5.width, p5.height) * 1.5 * scale.current
-          ),
-          strokeWeight: Math.max(p5.width, p5.height) / 300,
-        });
-        dotHand({
-          p5,
-          hand: resizeHandpose(
-            pose,
-            Math.max(p5.width, p5.height) * 1.5 * scale.current
-          ),
-          dotSize: Math.max(p5.width, p5.height) / 100,
-        });
-        p5.pop();
+        showHand(
+          pose,
+          255,
+          position.current,
+          -offset.current,
+          scale.current,
+          p5
+        );
       }
 
       timeRef.current = (timeRef.current + 1) % archiveRef.current.length;
     }
 
     if (displayHands.left.pose.length > 0) {
-      p5.push();
-      p5.stroke(255, displayHands.left.opacity);
-      p5.fill(255, displayHands.left.opacity);
-      p5.translate(
-        p5.width * (0.5 - offset.current),
-        p5.height / 2 + +position.current.y
+      showHand(
+        displayHands.left.pose,
+        displayHands.left.opacity,
+        position.current,
+        offset.current,
+        scale.current,
+        p5
       );
-      lineHand({
-        p5,
-        hand: resizeHandpose(
-          displayHands.left.pose,
-          Math.max(p5.width, p5.height) * 1.5 * scale.current
-        ),
-        strokeWeight: Math.max(p5.width, p5.height) / 300,
-      });
-      dotHand({
-        p5,
-        hand: resizeHandpose(
-          displayHands.left.pose,
-          Math.max(p5.width, p5.height) * 1.5 * scale.current
-        ),
-        dotSize: Math.max(p5.width, p5.height) / 100,
-      });
-      p5.pop();
     }
 
     if (displayHands.right.pose.length > 0) {
-      p5.push();
-      p5.stroke(255, displayHands.right.opacity);
-      p5.fill(255, displayHands.right.opacity);
-      p5.translate(
-        p5.width * (0.5 + offset.current),
-        p5.height / 2 + position.current.y
+      showHand(
+        displayHands.right.pose,
+        displayHands.right.opacity,
+        position.current,
+        -offset.current,
+        scale.current,
+        p5
       );
-      lineHand({
-        p5,
-        hand: resizeHandpose(
-          displayHands.right.pose,
-          Math.max(p5.width, p5.height) * 1.5 * scale.current
-        ),
-        strokeWeight: Math.max(p5.width, p5.height) / 300,
-      });
-      dotHand({
-        p5,
-        hand: resizeHandpose(
-          displayHands.right.pose,
-          Math.max(p5.width, p5.height) * 1.5 * scale.current
-        ),
-        dotSize: Math.max(p5.width, p5.height) / 100,
-      });
-      p5.pop();
     }
   };
 
