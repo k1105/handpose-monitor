@@ -1,17 +1,11 @@
 import dynamic from "next/dynamic";
 import p5Types from "p5";
-import {
-  Dispatch,
-  MutableRefObject,
-  SetStateAction,
-  useRef,
-  useState,
-} from "react";
+import { MutableRefObject, useRef } from "react";
 import { Hand, Keypoint } from "@tensorflow-models/hand-pose-detection";
 import { resizeHandpose } from "../lib/converter/resizeHandpose";
 import { Handpose } from "../@types/global";
 import { convertHandToHandpose } from "../lib/converter/convertHandToHandpose";
-import Webcam from "react-webcam";
+// import Webcam from "react-webcam";
 import { lineHand } from "../lib/p5/lineHand";
 
 type Props = {

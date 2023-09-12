@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic";
 import p5Types from "p5";
-import { MutableRefObject, useRef, useState } from "react";
+import { MutableRefObject, useRef } from "react";
 import { Hand, Keypoint } from "@tensorflow-models/hand-pose-detection";
 import { getSmoothedHandpose } from "../lib/getSmoothedHandpose";
 import { isFront } from "../lib/detector/isFront";
@@ -24,12 +24,12 @@ const Sketch = dynamic(import("react-p5"), {
 export const HandSketch = ({ handpose, isLost }: Props) => {
   const handposeHistory = new HandposeHistory();
   const displayHands = new DisplayHands();
-  const download = useRef<boolean>(true);
+  const download = useRef<boolean>(false);
   const recordedDataRef = useRef<{ left: number[]; right: number[] }[]>([]);
   const archiveRef = useRef<{ left: number[]; right: number[] }[]>([]);
   const position = useRef<Keypoint>({ x: 0, y: 200 });
-  const scale = useRef<number>(1);
-  const offset = useRef<number>(0.2);
+  const scale = useRef<number>(0.8);
+  const offset = useRef<number>(0.3);
   const timeRef = useRef<number>(0);
   const replayRef = useRef<HTMLDivElement>(null);
 
