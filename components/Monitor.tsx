@@ -1,7 +1,7 @@
 import dynamic from "next/dynamic";
 import p5Types from "p5";
 import { MutableRefObject, useRef, useState } from "react";
-import { Hand } from "@tensorflow-models/hand-pose-detection";
+import { Hand, Keypoint } from "@tensorflow-models/hand-pose-detection";
 import { resizeHandpose } from "../lib/converter/resizeHandpose";
 import { Handpose } from "../@types/global";
 import { convertHandToHandpose } from "../lib/converter/convertHandToHandpose";
@@ -16,6 +16,9 @@ type Props = {
       value: any;
     }[]
   >;
+  scale: MutableRefObject<number>;
+  offset: MutableRefObject<number>;
+  position: MutableRefObject<Keypoint>;
 };
 
 const Sketch = dynamic(import("react-p5"), {
@@ -23,8 +26,23 @@ const Sketch = dynamic(import("react-p5"), {
   ssr: false,
 });
 
-export const Monitor = ({ handpose, debugLog }: Props) => {
+export const Monitor = ({
+  handpose,
+  debugLog,
+  offset,
+  scale,
+  position,
+}: Props) => {
+  const sliderContainerRef = useRef<HTMLDivElement>(null);
   const logRef = useRef<HTMLDivElement>(null);
+  const scaleSliderRef = useRef<HTMLInputElement>(null);
+  const scaleTextRef = useRef<HTMLParagraphElement>(null);
+  const offsetSliderRef = useRef<HTMLInputElement>(null);
+  const offsetTextRef = useRef<HTMLParagraphElement>(null);
+  const positionXSliderRef = useRef<HTMLInputElement>(null);
+  const positionXTextRef = useRef<HTMLParagraphElement>(null);
+  const positionYSliderRef = useRef<HTMLInputElement>(null);
+  const positionYTextRef = useRef<HTMLParagraphElement>(null);
 
   const preload = (p5: p5Types) => {
     // 画像などのロードを行う
@@ -35,10 +53,22 @@ export const Monitor = ({ handpose, debugLog }: Props) => {
     p5.stroke(220);
     p5.fill(255);
     p5.strokeWeight(10);
+    positionYSliderRef.current!.value = String(position.current.x + 500);
+    positionYSliderRef.current!.value = String(position.current.y + 500);
+    offsetSliderRef.current!.value = String(offset.current * 10);
+    scaleSliderRef.current!.value = String(scale.current * 10);
   };
 
   const draw = (p5: p5Types) => {
     p5.clear();
+    positionXTextRef.current!.innerText = "x : " + position.current.x;
+    position.current.x = Number(positionXSliderRef.current!.value) - 500;
+    positionYTextRef.current!.innerText = "y : " + position.current.y;
+    position.current.y = Number(positionYSliderRef.current!.value) - 500;
+    offsetTextRef.current!.innerText = "offset : " + offset.current;
+    offset.current = Number(offsetSliderRef.current!.value) / 10;
+    scaleTextRef.current!.innerText = "scale : " + scale.current;
+    scale.current = Number(scaleSliderRef.current!.value) / 10;
 
     if (logRef.current !== null) {
       //ログ情報の描画
@@ -88,6 +118,18 @@ export const Monitor = ({ handpose, debugLog }: Props) => {
     }
   };
 
+  addEventListener("keydown", (event) => {
+    if (event.code == "KeyC") {
+      if (sliderContainerRef.current) {
+        if (sliderContainerRef.current.style.opacity == "0") {
+          sliderContainerRef.current.style.opacity = "1";
+        } else {
+          sliderContainerRef.current.style.opacity = "0";
+        }
+      }
+    }
+  });
+
   const windowResized = (p5: p5Types) => {
     p5.resizeCanvas(p5.windowWidth, p5.windowHeight);
   };
@@ -108,7 +150,6 @@ export const Monitor = ({ handpose, debugLog }: Props) => {
             position: "absolute",
             right: 30,
             top: 30,
-            zIndex: -1,
           }}
         >
           {/* <Webcam //手指の動きを取得するのに必要なカメラ映像
@@ -125,6 +166,17 @@ export const Monitor = ({ handpose, debugLog }: Props) => {
             </p>
           </div>
           <div ref={logRef} style={{ fontSize: "0.8rem", textAlign: "left" }} />
+
+          <div style={{ opacity: 0 }} ref={sliderContainerRef}>
+            <p ref={positionXTextRef} />
+            <input type="range" min="0" max="1000" ref={positionXSliderRef} />
+            <p ref={positionYTextRef} />
+            <input type="range" min="0" max="1000" ref={positionYSliderRef} />
+            <p ref={offsetTextRef} />
+            <input type="range" min="0" max="5" ref={offsetSliderRef} />
+            <p ref={scaleTextRef} />
+            <input type="range" min="5" max="20" ref={scaleSliderRef} />
+          </div>
         </div>
       </div>
     </>

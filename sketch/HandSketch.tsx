@@ -1,7 +1,7 @@
 import dynamic from "next/dynamic";
 import p5Types from "p5";
 import { MutableRefObject, useRef } from "react";
-import { Hand } from "@tensorflow-models/hand-pose-detection";
+import { Hand, Keypoint } from "@tensorflow-models/hand-pose-detection";
 import { getSmoothedHandpose } from "../lib/getSmoothedHandpose";
 import { dotHand } from "../lib/p5/dotHand";
 import { isFront } from "../lib/detector/isFront";
@@ -25,6 +25,9 @@ export const HandSketch = ({ handpose }: Props) => {
   const handposeHistory = new HandposeHistory();
   const displayHands = new DisplayHands();
   const recordedDataRef = useRef<{ left: number[]; right: number[] }[]>([]);
+  const position = useRef<Keypoint>({ x: 0, y: 200 });
+  const scale = useRef<number>(1);
+  const offset = useRef<number>(0.2);
 
   const debugLog = useRef<{ label: string; value: any }[]>([]);
 
@@ -73,12 +76,15 @@ export const HandSketch = ({ handpose }: Props) => {
       p5.push();
       p5.stroke(255, displayHands.left.opacity);
       p5.fill(255, displayHands.left.opacity);
-      p5.translate(p5.width * 0.3, p5.height / 2 + 50);
+      p5.translate(
+        p5.width * (0.5 - offset.current),
+        p5.height / 2 + +position.current.y
+      );
       lineHand({
         p5,
         hand: resizeHandpose(
           displayHands.left.pose,
-          Math.max(p5.width, p5.height) * 1.5
+          Math.max(p5.width, p5.height) * 1.5 * scale.current
         ),
         strokeWeight: Math.max(p5.width, p5.height) / 300,
       });
@@ -86,7 +92,7 @@ export const HandSketch = ({ handpose }: Props) => {
         p5,
         hand: resizeHandpose(
           displayHands.left.pose,
-          Math.max(p5.width, p5.height) * 1.5
+          Math.max(p5.width, p5.height) * 1.5 * scale.current
         ),
         dotSize: Math.max(p5.width, p5.height) / 100,
       });
@@ -97,12 +103,15 @@ export const HandSketch = ({ handpose }: Props) => {
       p5.push();
       p5.stroke(255, displayHands.right.opacity);
       p5.fill(255, displayHands.right.opacity);
-      p5.translate(p5.width * 0.7, p5.height / 2 + 50);
+      p5.translate(
+        p5.width * (0.5 + offset.current),
+        p5.height / 2 + position.current.y
+      );
       lineHand({
         p5,
         hand: resizeHandpose(
           displayHands.right.pose,
-          Math.max(p5.width, p5.height) * 1.5
+          Math.max(p5.width, p5.height) * 1.5 * scale.current
         ),
         strokeWeight: Math.max(p5.width, p5.height) / 300,
       });
@@ -110,7 +119,7 @@ export const HandSketch = ({ handpose }: Props) => {
         p5,
         hand: resizeHandpose(
           displayHands.right.pose,
-          Math.max(p5.width, p5.height) * 1.5
+          Math.max(p5.width, p5.height) * 1.5 * scale.current
         ),
         dotSize: Math.max(p5.width, p5.height) / 100,
       });
@@ -124,7 +133,13 @@ export const HandSketch = ({ handpose }: Props) => {
 
   return (
     <>
-      <Monitor handpose={handpose} debugLog={debugLog} />
+      <Monitor
+        handpose={handpose}
+        debugLog={debugLog}
+        offset={offset}
+        position={position}
+        scale={scale}
+      />
       <Sketch
         preload={preload}
         setup={setup}
