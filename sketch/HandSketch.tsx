@@ -118,6 +118,7 @@ export const HandSketch = ({ handpose, isLost }: Props) => {
 
       timeRef.current = (timeRef.current + 1) % archiveRef.current.length;
     } else {
+      timeRef.current = 0; //トラックが開始された時点でtimeRefを初期化する
       replayRef.current!.style.opacity = "0";
     }
 
