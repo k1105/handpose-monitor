@@ -9,7 +9,7 @@ export const autoRecorder = (
   download: boolean
 ) => {
   if (isLost) {
-    if (recordedDataRef.current.length > 10) {
+    if (recordedDataRef.current.length > 300) {
       //記録の終了
       if (download) {
         const content = JSON.stringify(recordedDataRef.current);
