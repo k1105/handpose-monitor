@@ -31,6 +31,7 @@ export const HandSketch = ({ handpose, isLost }: Props) => {
   const scale = useRef<number>(1);
   const offset = useRef<number>(0.2);
   const timeRef = useRef<number>(0);
+  const replayRef = useRef<HTMLDivElement>(null);
 
   const debugLog = useRef<{ label: string; value: any }[]>([]);
 
@@ -83,6 +84,8 @@ export const HandSketch = ({ handpose, isLost }: Props) => {
     );
 
     if (isLost.current && archiveRef.current.length > 0) {
+      replayRef.current!.style.opacity = "1";
+
       const rawPose = archiveRef.current[timeRef.current];
       if (rawPose.left.length > 0) {
         const pose: Keypoint[] = [];
@@ -114,6 +117,8 @@ export const HandSketch = ({ handpose, isLost }: Props) => {
       }
 
       timeRef.current = (timeRef.current + 1) % archiveRef.current.length;
+    } else {
+      replayRef.current!.style.opacity = "0";
     }
 
     if (displayHands.left.pose.length > 0) {
@@ -159,6 +164,12 @@ export const HandSketch = ({ handpose, isLost }: Props) => {
         draw={draw}
         windowResized={windowResized}
       />
+      <div
+        style={{ position: "absolute", bottom: "30px", left: "30px" }}
+        ref={replayRef}
+      >
+        <p style={{ fontSize: "2rem" }}>● Replay</p>
+      </div>
     </>
   );
 };
