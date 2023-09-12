@@ -165,7 +165,12 @@ export const HandSketch = ({ handpose, isLost }: Props) => {
         windowResized={windowResized}
       />
       <div
-        style={{ position: "absolute", bottom: "30px", left: "30px" }}
+        style={{
+          position: "absolute",
+          bottom: "30px",
+          left: "30px",
+          opacity: "0",
+        }}
         ref={replayRef}
       >
         <p style={{ fontSize: "2rem" }}>● Replay</p>
