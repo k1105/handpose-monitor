@@ -24,7 +24,7 @@ const Sketch = dynamic(import("react-p5"), {
 export const HandSketch = ({ handpose, isLost }: Props) => {
   const handposeHistory = new HandposeHistory();
   const displayHands = new DisplayHands();
-  const [disableDownload, setDisableDownload] = useState<boolean>(false);
+  const download = useRef<boolean>(true);
   const recordedDataRef = useRef<{ left: number[]; right: number[] }[]>([]);
   const archiveRef = useRef<{ left: number[]; right: number[] }[]>([]);
   const position = useRef<Keypoint>({ x: 0, y: 200 });
@@ -79,7 +79,7 @@ export const HandSketch = ({ handpose, isLost }: Props) => {
       recordedDataRef,
       archiveRef,
       hands,
-      disableDownload
+      download.current
     );
 
     if (isLost.current && archiveRef.current.length > 0) {
@@ -151,8 +151,7 @@ export const HandSketch = ({ handpose, isLost }: Props) => {
         offset={offset}
         position={position}
         scale={scale}
-        disableDownload={disableDownload}
-        setDisableDownload={setDisableDownload}
+        download={download}
       />
       <Sketch
         preload={preload}

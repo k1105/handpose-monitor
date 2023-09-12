@@ -25,8 +25,7 @@ type Props = {
   scale: MutableRefObject<number>;
   offset: MutableRefObject<number>;
   position: MutableRefObject<Keypoint>;
-  disableDownload: boolean;
-  setDisableDownload: Dispatch<SetStateAction<boolean>>;
+  download: MutableRefObject<boolean>;
 };
 
 const Sketch = dynamic(import("react-p5"), {
@@ -40,8 +39,7 @@ export const Monitor = ({
   offset,
   scale,
   position,
-  disableDownload,
-  setDisableDownload,
+  download,
 }: Props) => {
   const sliderContainerRef = useRef<HTMLDivElement>(null);
   const logRef = useRef<HTMLDivElement>(null);
@@ -53,6 +51,7 @@ export const Monitor = ({
   const positionXTextRef = useRef<HTMLParagraphElement>(null);
   const positionYSliderRef = useRef<HTMLInputElement>(null);
   const positionYTextRef = useRef<HTMLParagraphElement>(null);
+  const downloadButtonRef = useRef<HTMLButtonElement>(null);
 
   const preload = (p5: p5Types) => {
     // 画像などのロードを行う
@@ -187,8 +186,16 @@ export const Monitor = ({
             <p ref={scaleTextRef} />
             <input type="range" min="5" max="20" ref={scaleSliderRef} />
             <div>
-              <button onClick={() => setDisableDownload(!disableDownload)}>
-                {disableDownload ? <>Enable Download</> : <>Disable Download</>}
+              <button
+                onClick={() => {
+                  download.current = !download.current;
+                  downloadButtonRef.current!.innerText = download.current
+                    ? "Disable Download"
+                    : "Enable Download";
+                }}
+                ref={downloadButtonRef}
+              >
+                Disable Download
               </button>
             </div>
           </div>

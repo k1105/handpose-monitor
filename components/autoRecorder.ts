@@ -6,12 +6,12 @@ export const autoRecorder = (
   recordedDataRef: MutableRefObject<{ left: number[]; right: number[] }[]>,
   archiveRef: MutableRefObject<{ left: number[]; right: number[] }[]>,
   hands: { left: Handpose; right: Handpose },
-  disableDownload: boolean
+  download: boolean
 ) => {
   if (isLost) {
     if (recordedDataRef.current.length > 10) {
       //記録の終了
-      if (!disableDownload) {
+      if (download) {
         const content = JSON.stringify(recordedDataRef.current);
         const blob = new Blob([content], { type: "text/plain" });
         const objUrl = window.URL.createObjectURL(blob);
