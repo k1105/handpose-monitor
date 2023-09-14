@@ -122,27 +122,27 @@ export const HandSketch = ({ handpose, isLost }: Props) => {
       replayRef.current!.style.opacity = "0";
     }
 
-    if (displayHands.left.pose.length > 0) {
-      showHand(
-        displayHands.left.pose,
-        displayHands.left.opacity,
-        position.current,
-        offset.current,
-        scale.current,
-        p5
-      );
-    }
+    // if (displayHands.left.pose.length > 0) {
+    //   showHand(
+    //     displayHands.left.pose,
+    //     displayHands.left.opacity,
+    //     position.current,
+    //     offset.current,
+    //     scale.current,
+    //     p5
+    //   );
+    // }
 
-    if (displayHands.right.pose.length > 0) {
-      showHand(
-        displayHands.right.pose,
-        displayHands.right.opacity,
-        position.current,
-        -offset.current,
-        scale.current,
-        p5
-      );
-    }
+    // if (displayHands.right.pose.length > 0) {
+    //   showHand(
+    //     displayHands.right.pose,
+    //     displayHands.right.opacity,
+    //     position.current,
+    //     -offset.current,
+    //     scale.current,
+    //     p5
+    //   );
+    // }
   };
 
   const windowResized = (p5: p5Types) => {

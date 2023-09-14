@@ -94,31 +94,31 @@ export const Monitor = ({
     p5.push();
     p5.noFill();
     p5.strokeWeight(1);
-    p5.rect(p5.width - 330, 30, 300, 225);
+    // p5.rect(p5.width - 330, 30, 300, 225);
     p5.pop();
 
-    if (hands.left.length > 0) {
-      hands.left = resizeHandpose(hands.left, 3 / 4);
-      p5.push();
-      p5.translate(p5.width - 330 + hands.left[0].x, 30 + hands.left[0].y);
-      lineHand({
-        p5,
-        hand: hands.left,
-        strokeWeight: 5,
-      });
-      p5.pop();
-    }
-    if (hands.right.length > 0) {
-      hands.right = resizeHandpose(hands.right, 3 / 4);
-      p5.push();
-      p5.translate(p5.width - 330 + hands.right[0].x, 30 + hands.right[0].y);
-      lineHand({
-        p5,
-        hand: hands.right,
-        strokeWeight: 5,
-      });
-      p5.pop();
-    }
+    // if (hands.left.length > 0) {
+    //   hands.left = resizeHandpose(hands.left, 3 / 4);
+    //   p5.push();
+    //   p5.translate(p5.width - 330 + hands.left[0].x, 30 + hands.left[0].y);
+    //   lineHand({
+    //     p5,
+    //     hand: hands.left,
+    //     strokeWeight: 5,
+    //   });
+    //   p5.pop();
+    // }
+    // if (hands.right.length > 0) {
+    //   hands.right = resizeHandpose(hands.right, 3 / 4);
+    //   p5.push();
+    //   p5.translate(p5.width - 330 + hands.right[0].x, 30 + hands.right[0].y);
+    //   lineHand({
+    //     p5,
+    //     hand: hands.right,
+    //     strokeWeight: 5,
+    //   });
+    //   p5.pop();
+    // }
   };
 
   addEventListener("keydown", (event) => {
@@ -163,12 +163,12 @@ export const Monitor = ({
               audio={false}
               screenshotFormat="image/jpeg"
             /> */}
-          <div style={{ height: 225, width: 300 }}>
+          {/* <div style={{ height: 225, width: 300 }}>
             <p style={{ lineHeight: 0, color: "white", marginLeft: "10px" }}>
               Camera Range
             </p>
           </div>
-          <div ref={logRef} style={{ fontSize: "0.8rem", textAlign: "left" }} />
+          <div ref={logRef} style={{ fontSize: "0.8rem", textAlign: "left" }} /> */}
 
           <div style={{ opacity: 0 }} ref={sliderContainerRef}>
             <p ref={positionXTextRef} />
