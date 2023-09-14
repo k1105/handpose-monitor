@@ -174,7 +174,7 @@ export const HandSketch = ({ handpose, isLost }: Props) => {
         }}
         ref={replayRef}
       >
-        <p style={{ fontSize: "2rem" }}>● Replay</p>
+        {/* <p style={{ fontSize: "2rem" }}>● Replay</p> */}
       </div>
     </>
   );
